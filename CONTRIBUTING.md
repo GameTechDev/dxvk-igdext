@@ -1,13 +1,30 @@
 # Contributing
 
+Contributing to **dxvk-igdext** is subject of our [code of conduct](CODE_OF_CONDUCT.md).
+
+## Submitting issues
+
+### Security issues
+
+Do not submit security issues here on GitHub or in any other public channel! Instead, see the [SECURITY.md](SECURITY.md) file for instructions.
+
+### Other issues
+
+Submit regular issues here on GitHub. Include relevant data like dxvk-igdext version, DXVK version, Proton/Wine version, and distro/kernel info, etc.
+
+## Contributing code
+
+We accept pull requests here on GitHub. Before starting work on a PR, please let us know what you want to work on. This will avoid duplicating efforts and will ensure that your work aligns with our vision and direction.
+
+Please write proper commit messages. (A popular howto: [cbea.ms/git-commit](https://cbea.ms/git-commit/).) Please create commits that are _logical_, _discrete_, _easy_ to review steps toward your end goal.
+
 ### License
 
-<PROJECT NAME> is licensed under the terms in [LICENSE]<link to license file in repo>. By contributing to the project, you agree to the license and copyright terms therein and release your contribution under these terms.
+**dxvk-igdext** is licensed under the terms in [LICENSE.md](LICENSE.md). By contributing to the project, you agree to the license and copyright terms therein and release your contribution under these terms.
 
 ### Sign your work
 
-Please use the sign-off line at the end of the patch. Your signature certifies that you wrote the patch or otherwise have the right to pass it on as an open source patch. The rules are pretty simple: if you can certify
-the below (from [developercertificate.org](http://developercertificate.org/)):
+Please use the sign-off line at the end of the patch. Your signature certifies that you wrote the patch or otherwise have the right to pass it on as an open-source patch. The rules are pretty simple: if you can certify the below (from [developercertificate.org](http://developercertificate.org/)):
 
 ```
 Developer Certificate of Origin
@@ -47,11 +64,11 @@ By making a contribution to this project, I certify that:
     this project or the open source license(s) involved.
 ```
 
-Then you just add a line to every git commit message saying:
+Then you just add a line to every git commit message:
 
-    Signed-off-by: Joe Smith <joe.smith@email.com>
+    Signed-off-by: Your Name <your.name@email.com>
 
-Using your known identity (sorry, no anonymous contributions.)
+Use your real name (sorry, no pseudonyms or anonymous contributions.)
 
 If you set your `user.name` and `user.email` git configs, you can sign your
 commit automatically with `git commit -s`.

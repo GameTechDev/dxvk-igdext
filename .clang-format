@@ -1,0 +1,20 @@
+---
+Language:        Cpp
+ColumnLimit:     0
+IndentWidth: 4
+IndentCaseLabels: true
+IndentExternBlock: NoIndent
+NamespaceIndentation: All
+FixNamespaceComments: false
+BreakBeforeBinaryOperators: NonAssignment
+AlignAfterOpenBracket: DontAlign
+AlignOperands: DontAlign
+PointerAlignment: Left
+SortIncludes: Never
+BreakBeforeBraces: Allman
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+SpacesInParentheses: false
+PackConstructorInitializers: Never
+BreakConstructorInitializers: BeforeColon
+...

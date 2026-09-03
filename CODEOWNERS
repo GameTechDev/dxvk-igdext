@@ -1,0 +1,10 @@
+# This file contains the codeowners of dxvk-igdext. A codeowner is automatically
+# added to a review when owned files are touched by the PR.
+#
+# Every line has the format
+#   <path-pattern> <User1> [<UserN>]
+# where
+#   <path-pattern> is a folder, directory or pattern to either and
+#   <User> is either a user or a team.
+
+*    @damian-tomczak-intel

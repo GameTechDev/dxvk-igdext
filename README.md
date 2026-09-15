@@ -129,4 +129,9 @@ the module definition file the linker uses to build the export table.
 | `_INTC_D3D12_RegisterApplicationCallbacks` | Modern D3D12 | stub, inert |
 | `D3D12CreateDeviceExtensionContext2` | Modern D3D12 (loader-compat) | stub |
 | `_INTC_D3D12_INT_CreateDeviceExtensionContext` | Modern D3D12 (Internal Extensions) | stub |
-| `_INTC_CreateDeviceExtensionContext` | Modern D3D11+D3D12 | D3D11 half negotiates version and requires DX
+| `_INTC_CreateDeviceExtensionContext` | Modern D3D11+D3D12 | D3D11 half negotiates version and requires DXVK, D3D12 half fails |
+| `_INTC_CreateDeviceExtensionContext1` | Modern D3D11+D3D12 | D3D11 half negotiates version and requires DXVK, D3D12 half fails |
+| `_INTC_DestroyDeviceExtensionContext` | Modern D3D11+D3D12 | frees context |
+| `D3D11D3D12CreateDeviceExtensionContext2` | Modern D3D11+D3D12 (loader-compat) | D3D11 half negotiates version and requires DXVK, D3D12 half fails |
+| `D3D11D3D12DestroyDeviceExtensionContext2` | Modern D3D11+D3D12 (loader-compat) | frees context |
+| `_INTC_INT_CreateDeviceExtensionContext` | Modern D3D11+D3D12 (Internal Extensions) | stub |

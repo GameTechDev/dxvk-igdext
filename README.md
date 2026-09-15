@@ -1,10 +1,9 @@
 # dxvk-igdext
 
-`igdext64.dll` for Wine/DXVK: lets games use Intel D3D11 Graphics
-Extensions (UAV overlap, MultiDrawIndirect, depth bounds) under Wine by
-forwarding them to DXVK's native implementation, instead of the game silently
-falling back to slower default D3D11 behavior when the extensions aren't
-available.
+`igdext64.dll` for Wine/DXVK: lets games use Intel D3D11 Graphics Extensions
+(UAV overlap, MultiDrawIndirect, depth bounds) under Wine by forwarding them
+to DXVK's native implementation, instead of the game silently falling back
+to slower default D3D11 behavior when the extensions aren't available.
 
 > **Note:** Linux/Wine only for now, not for use on native Windows.
 

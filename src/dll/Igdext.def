@@ -38,3 +38,4 @@ EXPORTS
     _INTC_D3D12_RegisterApplicationCallbacks                   @38
     _INTC_DestroyDeviceExtensionContext                        @39
     _INTC_INT_CreateDeviceExtensionContext                     @40
+    _INTC_D3D12_SetApplicationInfo                             @41

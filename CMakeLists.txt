@@ -15,6 +15,8 @@ set(SOURCES
     ${SRC_DIR}/ExtensionContextBase.cpp
     ${SRC_DIR}/D3D11ExtensionContext.cpp
     ${SRC_DIR}/D3D12ExtensionContext.cpp
+    ${SRC_DIR}/WineUnixLib.cpp
+    ${SRC_DIR}/IntelAppInfoUnixlib.cpp
     ${LEGACY_DIR}/LegacyD3D11ExtensionContext.cpp
     ${LEGACY_DIR}/LegacyD3D12ExtensionContext.cpp
     ${DLL_DIR}/IgdextApiDll.cpp
@@ -41,7 +43,7 @@ target_compile_definitions(igdext PRIVATE
     INTC_IGDEXT_D3D11
 )
 
-target_link_libraries(igdext PRIVATE dxgi)
+target_link_libraries(igdext PRIVATE dxgi ntdll)
 
 set_target_properties(igdext PROPERTIES
     OUTPUT_NAME "igdext64"
@@ -52,5 +54,23 @@ if( MINGW )
     target_link_options(igdext PRIVATE -static -static-libgcc -static-libstdc++)
 endif()
 
+# igdext64_unix.so: native Linux side of the WineUnixLib bridge, built with
+# the host's own compiler, not the MinGW cross toolchain.
+set(UNIX_DIR "${SRC_DIR}/unix")
+
+set(INTELAPPINFO_UNIX_CC "cc" CACHE STRING
+    "Host C compiler for igdext64_unix.so (WineUnixLib bridge's native side). Must be a native Linux compiler, not the MinGW cross compiler.")
+
+set(IGDEXT_UNIX_SO "${CMAKE_CURRENT_BINARY_DIR}/igdext64_unix.so")
+add_custom_command(
+    OUTPUT ${IGDEXT_UNIX_SO}
+    COMMAND ${INTELAPPINFO_UNIX_CC} -shared -fPIC -O2 -o ${IGDEXT_UNIX_SO} ${UNIX_DIR}/IntelAppInfoUnix.c
+    DEPENDS ${UNIX_DIR}/IntelAppInfoUnix.c ${UNIX_DIR}/IntelAppInfoUnixProtocol.h
+    COMMENT "Building igdext64_unix.so with ${INTELAPPINFO_UNIX_CC}"
+)
+add_custom_target(igdext_unix ALL DEPENDS ${IGDEXT_UNIX_SO})
+add_dependencies(igdext igdext_unix)
+
 include(GNUInstallDirs)
 install(TARGETS igdext RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${IGDEXT_UNIX_SO} DESTINATION ${CMAKE_INSTALL_BINDIR})

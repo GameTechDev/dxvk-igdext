@@ -6,12 +6,13 @@ SPDX-License-Identifier: MIT
 
 File Name:  D3D12ExtensionContext.h
 
-Abstract:   Modern D3D12 extension entry points: version negotiation and
-            context creation
+Abstract:   Modern D3D12 extension entry points: version negotiation, context
+            creation, and application/engine info reporting to the native
+            driver
 
-Notes:      Declares D3D12ExtensionContext, the class backing every
-            _INTC_D3D12_* export in IgdextApiDll.cpp - mirrors
-            D3D11ExtensionContext's pattern.
+Notes:      Declares D3D12ExtensionContext (backing _INTC_D3D12_* exports)
+            and D3D12SetApplicationInfo, which relays through the
+            WineUnixLib bridge - there is no direct per-VkDevice push.
 
 \*****************************************************************************/
 
@@ -38,3 +39,7 @@ private:
     // placeholders, matching ExtensionContextBase's other synthesized values.
     static constexpr INTCExtensionVersion c_MaxDriverSupportedExtVersion = {EXTENSION_HW_FEATURE_LEVEL_5, EXTENSION_API_VERSION_20, EXTENSION_REVISION_0};
 };
+
+// Takes no device/context: games call this once, often before any D3D12
+// device exists.
+HRESULT D3D12SetApplicationInfo(INTCExtensionAppInfo1* pExtensionAppInfo);

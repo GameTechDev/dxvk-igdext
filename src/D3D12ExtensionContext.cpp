@@ -6,15 +6,38 @@ SPDX-License-Identifier: MIT
 
 File Name:  D3D12ExtensionContext.cpp
 
-Abstract:   Modern D3D12 extension entry points: version negotiation and
-            context creation
+Abstract:   Modern D3D12 extension entry points: version negotiation, context
+            creation, and application/engine info reporting to the native
+            driver
 
-Notes:      Mirrors D3D11ExtensionContext.cpp's pattern: negotiate a
-            version, then report device info via ExtensionContextBase's
-            D3D12 (LUID-based) GetDeviceDriverDescription overload.
+Notes:      Application/engine info reaches the native driver only through
+            D3D12SetApplicationInfo's WineUnixLib relay - see WineUnixLib.h.
 
 \*****************************************************************************/
 #include "Stdafx.h"
+
+#include "IntelAppInfoUnixlib.h"
+
+namespace
+{
+    std::string WideToUtf8(const wchar_t* wide)
+    {
+        if (!wide || !*wide)
+        {
+            return {};
+        }
+
+        int size = WideCharToMultiByte(CP_UTF8, 0, wide, -1, nullptr, 0, nullptr, nullptr);
+        if (size <= 0)
+        {
+            return {};
+        }
+
+        std::string result(size - 1, '\0'); // size includes the null terminator, std::string adds its own
+        WideCharToMultiByte(CP_UTF8, 0, wide, -1, result.data(), size, nullptr, nullptr);
+        return result;
+    }
+}
 
 HRESULT D3D12ExtensionContext::GetSupportedVersions(const void* pDevice, INTCExtensionVersionHelper* driverExtensionVersion)
 {
@@ -74,5 +97,24 @@ HRESULT D3D12ExtensionContext::InitExtensions(const void* pDevice, void** ppfnEx
     pExtensionInfo->pDeviceDriverVersion    = c_DeviceDriverVersion;
     pExtensionInfo->DeviceDriverBuildNumber = c_DeviceDriverBuildNumber;
 
+    // App info passed directly to CreateDeviceExtensionContext is not
+    // relayed yet - not supported for now.
+
     return result;
+}
+
+HRESULT D3D12SetApplicationInfo(INTCExtensionAppInfo1* pExtensionAppInfo)
+{
+    if (!pExtensionAppInfo)
+    {
+        return E_INVALIDARG;
+    }
+
+    IntelAppInfoUnixlib_SetEngineInfo(
+        WideToUtf8(pExtensionAppInfo->pApplicationName).c_str(),
+        pExtensionAppInfo->ApplicationVersion.major, pExtensionAppInfo->ApplicationVersion.minor, pExtensionAppInfo->ApplicationVersion.patch,
+        WideToUtf8(pExtensionAppInfo->pEngineName).c_str(),
+        pExtensionAppInfo->EngineVersion.major, pExtensionAppInfo->EngineVersion.minor, pExtensionAppInfo->EngineVersion.patch);
+
+    return S_OK;
 }

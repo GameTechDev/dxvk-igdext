@@ -5,7 +5,7 @@ Extensions (UAV overlap, MultiDrawIndirect, depth bounds) under Wine by
 forwarding them to DXVK's native implementation, instead of the game silently
 falling back to slower default D3D11 behavior when the extensions aren't
 available. Also lets D3D12 games create an Intel extension context and
-negotiate a version against the real device, the same way D3D11 does.
+report application/engine info to the native driver.
 
 > **Note:** Linux/Wine only for now, not for use on native Windows.
 
@@ -81,11 +81,15 @@ against either one depending on which version of Intel's SDK they linked:
 
 Both generations exist side by side so either kind of game finds what it's
 looking for. D3D11 entries forward to DXVK. D3D12 entries negotiate a
-version and report device info the same way D3D11 does; anything beyond
-context creation (`SetEventMarker`, `GetCommandListHandle`, raytracing, ...)
-is still out of scope and has no function table of its own.
+version and report device info the same way D3D11 does, but have no
+function table of their own beyond context creation and application info -
+`SetEventMarker`, `GetCommandListHandle`, raytracing, ... are still out of
+scope. Application/engine info reported through `_INTC_D3D12_SetApplicationInfo`
+never touches any single `VkDevice` directly - it reaches the native driver
+through an internal relay, so it's forwarded the same way regardless of
+which Vulkan implementation backs the D3D12 device.
 
-All 38 exports are also listed by name in [Igdext.def](src/dll/Igdext.def),
+All 39 exports are also listed by name in [Igdext.def](src/dll/Igdext.def),
 the module definition file the linker uses to build the export table.
 
 | Export | Family | Behavior |
@@ -120,6 +124,7 @@ the module definition file the linker uses to build the export table.
 | `_INTC_D3D12_CreateDeviceExtensionContext2` | Modern D3D12 | negotiates version |
 | `_INTC_D3D12_GetSupportedVersions` | Modern D3D12 | reports max version |
 | `_INTC_D3D12_RegisterApplicationCallbacks` | Modern D3D12 | stub, inert |
+| `_INTC_D3D12_SetApplicationInfo` | Modern D3D12 | relays app/engine info through the WineUnixLib bridge |
 | `D3D12CreateDeviceExtensionContext2` | Modern D3D12 (loader-compat) | negotiates version |
 | `_INTC_D3D12_INT_CreateDeviceExtensionContext` | Modern D3D12 (Internal Extensions) | stub |
 | `_INTC_CreateDeviceExtensionContext` | Modern D3D11+D3D12 | D3D11 half requires DXVK - both negotiate version |

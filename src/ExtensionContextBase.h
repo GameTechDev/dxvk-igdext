@@ -61,6 +61,8 @@ struct ExtensionContextBase
     static constexpr uint32_t       c_EUCount                 = 96;
     static constexpr uint32_t       c_PackageTDP              = 75;
     static constexpr uint32_t       c_MaxFillRate             = 32;
+    static constexpr uint32_t       c_GMDID                   = INTC_GMD_ID(INTC_GMD_ARCH_20, INTC_GMD_ARCH_20_RELEASE_XE2_HPG_X2);
+    static constexpr uint32_t       c_XeCoresCount            = 12;
 
     std::wstring               m_DeviceDriverDescription; // Device Driver description string
     ComPtr<ID3D11VkExtContext> m_pDxVkExtCtx;             // Used for detection of DXVK runtime
@@ -80,6 +82,7 @@ struct ExtensionContextBase
     // Helper functions
 
     HRESULT                    GetDeviceDriverDescription(ID3D11Device* pDevice);
+    HRESULT                    GetDeviceDriverDescription(ID3D12Device* pDevice);
     static ID3D11VkExtContext* GetDxVkExtContextForDeviceContext(ID3D11DeviceContext* pDeviceContext);
 
     void GetGTGenerationName(INTCDeviceInfo* pIntelDeviceInfo);

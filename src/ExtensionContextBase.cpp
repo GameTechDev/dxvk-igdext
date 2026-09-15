@@ -47,6 +47,34 @@ HRESULT ExtensionContextBase::GetDeviceDriverDescription(ID3D11Device* pDevice)
     return S_OK;
 };
 
+// D3D12 has no IDXGIDevice, so the adapter is looked up by LUID instead
+HRESULT ExtensionContextBase::GetDeviceDriverDescription(ID3D12Device* pDevice)
+{
+    ComPtr<IDXGIFactory4> pFactory;
+    ComPtr<IDXGIAdapter>  pAdapter;
+    DXGI_ADAPTER_DESC     adapterDesc = {0};
+    HRESULT               result;
+
+    if (FAILED(result = CreateDXGIFactory1(IID_PPV_ARGS(&pFactory))))
+    {
+        return result;
+    }
+
+    if (FAILED(result = pFactory->EnumAdapterByLuid(pDevice->GetAdapterLuid(), IID_PPV_ARGS(&pAdapter))))
+    {
+        return result;
+    }
+
+    if (FAILED(result = pAdapter->GetDesc(&adapterDesc)))
+    {
+        return result;
+    }
+
+    m_DeviceDriverDescription = adapterDesc.Description;
+
+    return S_OK;
+}
+
 void ExtensionContextBase::GetGTGenerationName(INTCDeviceInfo* pIntelDeviceInfo)
 {
     constexpr std::wstring_view DxvkDevice = c_GTGenerationName;

@@ -132,28 +132,50 @@ HRESULT _INTC_D3D12_GetSupportedVersions(
 {
     HRESULT result = S_OK;
 
-    if (!pDevice || !pSupportedExtVersionsCount)
+    if (!pDevice)
     {
         return E_INVALIDARG;
     }
 
-    D3D12ExtensionContext*     pExtensionContext      = new D3D12ExtensionContext(); // Create temporary INTCExtensionContext
-    INTCExtensionVersionHelper driverExtensionVersion = {0};
+    // The historical SupportedExtVersions[] table entries are all backward-compatible with
+    // the fixed driver version queried below, so it's served directly - fixed, compile-time
+    // data, safe to read concurrently across devices/calls with no shared mutable state.
+    constexpr UINT32 NumSupportedVersions = sizeof(SupportedExtVersions) / sizeof(INTCExtensionVersion);
 
-    // D3D12 extensions are not implemented in this repo - the context always reports
-    // the "no version supported" sentinel, so zero supported versions are ever returned.
-    result = pExtensionContext->GetSupportedVersions(pDevice, &driverExtensionVersion);
-
-    delete pExtensionContext;
-
-    if (FAILED(result))
+    // Report back number of supported versions
+    if (pSupportedExtVersions == nullptr && pSupportedExtVersionsCount != nullptr)
     {
-        return result;
+        D3D12ExtensionContext*     pExtensionContext      = new D3D12ExtensionContext(); // Create temporary INTCExtensionContext
+        INTCExtensionVersionHelper driverExtensionVersion = {0};
+
+        // Request driver for a maximum supported version on a current platform
+        if (FAILED(result = pExtensionContext->GetSupportedVersions(pDevice, &driverExtensionVersion)))
+        {
+            delete pExtensionContext;
+
+            return result;
+        }
+
+        delete pExtensionContext;
+
+        *pSupportedExtVersionsCount = NumSupportedVersions;
+
+        return S_OK;
+    }
+    // Return a list of supported extension versions
+    else if (pSupportedExtVersions != nullptr && *pSupportedExtVersionsCount == NumSupportedVersions)
+    {
+        // Return all supported interface versions
+        for (UINT32 i = 0; i < NumSupportedVersions; i++)
+        {
+            pSupportedExtVersions[i] = SupportedExtVersions[i];
+        }
+
+        return S_OK;
     }
 
-    *pSupportedExtVersionsCount = 0;
-
-    return S_OK;
+    // No appropriate size buffer available in pSupportedExtVersions
+    return E_OUTOFMEMORY;
 }
 
 HRESULT D3D12GetSupportedVersions2(
@@ -161,16 +183,7 @@ HRESULT D3D12GetSupportedVersions2(
     INTCExtensionVersion* pSupportedExtVersions,
     uint32_t*             pSupportedExtVersionsCount)
 {
-    if (!pDevice || !pSupportedExtVersionsCount)
-    {
-        return E_INVALIDARG;
-    }
-
-    // D3D12 extensions are not implemented in this repo - always report zero
-    // supported versions, matching _INTC_D3D12_GetSupportedVersions above.
-    *pSupportedExtVersionsCount = 0;
-
-    return S_OK;
+    return _INTC_D3D12_GetSupportedVersions(pDevice, pSupportedExtVersions, pSupportedExtVersionsCount);
 }
 
 HRESULT _INTC_D3D11_CreateDeviceExtensionContext(

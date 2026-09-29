@@ -173,6 +173,12 @@ HRESULT D3D12GetSupportedVersions2(
     return S_OK;
 }
 
+HRESULT _INTC_D3D12_SetApplicationInfo(
+    INTCExtensionAppInfo1* pExtensionAppInfo)
+{
+    return D3D12SetApplicationInfo(pExtensionAppInfo);
+}
+
 HRESULT _INTC_D3D11_CreateDeviceExtensionContext(
     const ID3D11Device*    pDevice,
     INTCExtensionContext** ppExtensionContext,

@@ -15,6 +15,7 @@ set(SOURCES
     ${SRC_DIR}/ExtensionContextBase.cpp
     ${SRC_DIR}/D3D11ExtensionContext.cpp
     ${SRC_DIR}/D3D12ExtensionContext.cpp
+    ${SRC_DIR}/IgdextUnixlib.cpp
     ${LEGACY_DIR}/LegacyD3D11ExtensionContext.cpp
     ${LEGACY_DIR}/LegacyD3D12ExtensionContext.cpp
     ${DLL_DIR}/IgdextApiDll.cpp

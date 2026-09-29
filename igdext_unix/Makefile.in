@@ -1,0 +1,9 @@
+MODULE    = igdext_unix.dll
+UNIXLIB   = igdext_unix.so
+IMPORTS   = kernel32
+
+EXTRADLLFLAGS = -mno-cygwin
+
+SOURCES = \
+	main.c \
+	unixlib.c

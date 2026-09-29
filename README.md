@@ -4,8 +4,14 @@
 (UAV overlap, MultiDrawIndirect, depth bounds) under Wine by forwarding them
 to DXVK's native implementation, instead of the game silently falling back
 to slower default D3D11 behavior when the extensions aren't available.
+Also relays the application/engine info D3D12 games report through
+`INTC_D3D12_SetApplicationInfo` to the native driver.
 
 > **Note:** Linux/Wine only for now, not for use on native Windows.
+
+> **Note:** relaying `INTC_D3D12_SetApplicationInfo` is not supported on Mesa
+> yet - no Mesa Vulkan driver picks up the relayed application/engine info,
+> so there it has no effect.
 
 ## Handled automatically by Proton
 
@@ -89,9 +95,12 @@ Both generations exist side by side so either kind of game finds what it's
 looking for. D3D11 entries actually forward to DXVK; D3D12 entries are
 inert stubs (`GetSupportedVersions` reports zero, `CreateDeviceExtensionContext`
 always fails) kept only because `igdext.lib`'s loader requires the export to
-exist at all.
+exist at all. The one exception is `_INTC_D3D12_SetApplicationInfo`, which
+doesn't take an extension context: it forwards the game's application/engine
+info to the native Vulkan driver through `igdext_unix` (not supported on
+Mesa yet, see the note at the top).
 
-All 38 exports are also listed by name in [Igdext.def](src/dll/Igdext.def),
+All 39 exports are also listed by name in [Igdext.def](src/dll/Igdext.def),
 the module definition file the linker uses to build the export table.
 
 | Export | Family | Behavior |
@@ -126,6 +135,7 @@ the module definition file the linker uses to build the export table.
 | `_INTC_D3D12_CreateDeviceExtensionContext2` | Modern D3D12 | stub |
 | `_INTC_D3D12_GetSupportedVersions` | Modern D3D12 | stub |
 | `_INTC_D3D12_RegisterApplicationCallbacks` | Modern D3D12 | stub, inert |
+| `_INTC_D3D12_SetApplicationInfo` | Modern D3D12 | relays app/engine info through igdext_unix.dll |
 | `D3D12CreateDeviceExtensionContext2` | Modern D3D12 (loader-compat) | stub |
 | `_INTC_D3D12_INT_CreateDeviceExtensionContext` | Modern D3D12 (Internal Extensions) | stub |
 | `_INTC_CreateDeviceExtensionContext` | Modern D3D11+D3D12 | D3D11 half negotiates version and requires DXVK, D3D12 half fails |
